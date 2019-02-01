@@ -22,7 +22,6 @@ function draw() {
     canvas2D.clear();
     canvas2D.drawBackground(GAME_CONFIG.BACKGROUND_COLOR);
     map.draw();
-    canvas2D.drawGrid(GAME_CONFIG.GRID_COLOR);
 }
 
 function gameLoop() {

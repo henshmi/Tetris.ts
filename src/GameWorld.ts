@@ -13,10 +13,13 @@ export class GameWorld {
     private _width: number;
     private _height: number;
     private _movingShapeColor: string;
-    private _refreshRate: number = 15;
+    private _updateEveryXFrames: number = 20;
     private _frame: number = 0;
     private _movingShape: Vector2[] = [];
     private _movingShapeOrigin: Vector2;
+    private _score: number = 0;
+    private _gameOver : boolean;
+
     private _shapeTypes: ShapeType[] = [
         ShapeType.I,
         ShapeType.J,
@@ -26,6 +29,13 @@ export class GameWorld {
         ShapeType.Z,
         ShapeType.T
     ];
+
+    //------Properties------//
+    
+    public get gameOver() : boolean {
+        return this._gameOver;
+    }
+    
     
     //------Constructor------//
 
@@ -51,34 +61,51 @@ export class GameWorld {
     }
 
     private isCellFilled(x: number, y: number): boolean {
-        return this._map[y][x].filled;
+        return this.isInMap(x,y) && this._map[y][x].filled;
     }
 
     private clearCell(x: number, y: number): void {
-        this._map[y][x].filled = false;
+        if(this.isInMap(x, y)) {
+            this._map[y][x].filled = false;
+        }
+    }
+
+    private isInMap(x: number, y: number) {
+        return x >= 0 && x < this._width && y >= 0 && y < this._height;
     }
 
     private colorCell(x: number, y: number, color: string): void {
-        this._map[y][x].filled = true;
-        this._map[y][x].color = color;
+        if(this.isInMap(x, y)){
+            this._map[y][x].filled = true;
+            this._map[y][x].color = color;
+        }
     }
 
     private isPartOfShape(cell: Vector2, shape: Vector2[]): boolean {
         return shape.some(shapeCell => shapeCell.X === cell.X && shapeCell.Y === cell.Y);
     }
 
-    private handleInput(): void{
+    private increaseScore() : void {
+        this._score += this._width;
+    }
 
-        if(keyboard.isPressed(GAME_CONFIG.UP_KEY)) {
-            this.rotateShape();
-        }
-
-        if (keyboard.isPressed(GAME_CONFIG.DOWN_KEY)) {
-            this.lowerShape();
-        }
+    private dropShape(): void {
+        while(!this.lowerShape()){}
+    }
+    private handleInput(): void {
 
         let toMoveX = 0;
-        if (keyboard.isPressed(GAME_CONFIG.LEFT_KEY)) {
+
+        if(keyboard.isPressed(GAME_CONFIG.DROP)) {
+            this.dropShape();
+        }
+        else if(keyboard.isPressed(GAME_CONFIG.UP_KEY)) {
+            this.rotateShape();
+        }
+        else if (keyboard.isPressed(GAME_CONFIG.DOWN_KEY)) {
+            this.lowerShape();
+        }
+        else if (keyboard.isPressed(GAME_CONFIG.LEFT_KEY)) {
             toMoveX = -1;
         }
         else if (keyboard.isPressed(GAME_CONFIG.RIGHT_KEY)) {
@@ -189,6 +216,11 @@ export class GameWorld {
                 }
 
                 this._map.unshift(newRow);
+                this.increaseScore();
+                
+                if(this._updateEveryXFrames > 0) {
+                    this._updateEveryXFrames--;
+                }
             }
         }
     }
@@ -199,6 +231,7 @@ export class GameWorld {
 
     private addShape(shapeType: ShapeType): void {
 
+        let shapeY = -4;
         let randomX: number;
         let position: Vector2;
         this._movingShape = [];
@@ -206,7 +239,7 @@ export class GameWorld {
         switch(shapeType) {
             case ShapeType.I:
                 randomX = Math.floor(Math.random() * this._width);
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X, position.Y + 1),
@@ -217,7 +250,7 @@ export class GameWorld {
                 break;
             case ShapeType.J:
                 randomX = Math.floor(Math.random() * (this._width - 1)) + 1;
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X, position.Y + 1),
@@ -228,7 +261,7 @@ export class GameWorld {
                 break;
             case ShapeType.L:
                 randomX = Math.floor(Math.random() * (this._width - 1));
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y ),
                     new Vector2(position.X, position.Y + 1),
@@ -239,7 +272,7 @@ export class GameWorld {
                 break;
             case ShapeType.O:
                 randomX = Math.floor(Math.random() * (this._width - 1));
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X + 1, position.Y),
@@ -250,7 +283,7 @@ export class GameWorld {
                 break;
             case ShapeType.S:
                 randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X + 1, position.Y),
@@ -261,7 +294,7 @@ export class GameWorld {
                 break;
             case ShapeType.Z:
                 randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X - 1, position.Y),
@@ -272,7 +305,7 @@ export class GameWorld {
                 break;
             case ShapeType.T:
                 randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, 0);
+                position = new Vector2(randomX, shapeY);
                 this._movingShape = [
                     new Vector2(position.X, position.Y),
                     new Vector2(position.X, position.Y + 1),
@@ -301,7 +334,7 @@ export class GameWorld {
 
     public update(): void {
         this.handleInput();
-        if(++this._frame % this._refreshRate) {
+        if(++this._frame % this._updateEveryXFrames) {
             return;
         }
         const reachedBottom = this.lowerShape();
@@ -312,9 +345,13 @@ export class GameWorld {
                 this.generateRandomShape();
             }
             else{
-                console.log("Game Over!");
+                this._gameOver = true;
             }
         }
+    }
+
+    private drawScore(): void {
+        canvas2D.drawText('Score: ' + this._score.toString(), GAME_CONFIG.FONT, GAME_CONFIG.FONT_COLOR, GAME_CONFIG.SCORE_POSITION);
     }
 
     public draw(): void {
@@ -322,9 +359,11 @@ export class GameWorld {
             for(let j = 0 ; j < this._map[i].length ; j++){
                 const cell: Cell = this._map[i][j];
                 if(cell.filled){
-                    canvas2D.drawRectAtCell(i, j, cell.color);
+                    canvas2D.drawRectAtCell(i, j, cell.color, GAME_CONFIG.STROKE_COLOR, GAME_CONFIG.CELL_SIZE);
                 }
             }
         }
+
+        this.drawScore();
     }
 }
