@@ -82,7 +82,6 @@ export class GameWorld {
             this.rotateShape();
         }
         else if (keyboard.isPressed(GAME_CONFIG.DOWN_KEY)) {
-            const reachedBottom = this.lowerShape();
             this.increaseScore(GAME_CONFIG.LOWERED_SHAPE_BONUS);
         }
         else if (keyboard.isPressed(GAME_CONFIG.LEFT_KEY)) {
@@ -161,10 +160,13 @@ export class GameWorld {
     private handleFilledLines(): void {
         
         let filledLinesCount = this._map.removeFilledLines();
-        this.increaseScore(filledLinesCount * GAME_CONFIG.FILLED_LINE_BONUS);
-                
-        if(this._updateEveryXFrames > 0) {
-            this._updateEveryXFrames--;
+
+        if(filledLinesCount > 0) {
+            this.increaseScore(filledLinesCount * GAME_CONFIG.FILLED_LINE_BONUS);
+
+            if(this._updateEveryXFrames > 0) {
+                this._updateEveryXFrames--;
+            }
         }
     }
 
