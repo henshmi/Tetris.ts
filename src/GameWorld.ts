@@ -194,10 +194,14 @@ export class GameWorld {
                 GAME_CONFIG.NEXT_SHAPE_LABEL_POSITION
             );
         
-        for(let shape of this._shapesQueue){
+        for(let i = this._shapesQueue.length - 1; i >= 0; i--){
+            let shape = this._shapesQueue[i];
+            let indexFromEnd = this._shapesQueue.length - 1 - i;
             let demoShape = this._shapeFactory.createShape(
                     shape.shapeType, 
-                    new Vector2(GAME_CONFIG.NEXT_SHAPE_POSITION.X, GAME_CONFIG.NEXT_SHAPE_POSITION.Y), 
+                    new Vector2(
+                        GAME_CONFIG.NEXT_SHAPE_POSITION.X + indexFromEnd * 4 * GAME_CONFIG.NEXT_SHAPE_CELL_SIZE, 
+                        GAME_CONFIG.NEXT_SHAPE_POSITION.Y), 
                     shape.color,
                     GAME_CONFIG.NEXT_SHAPE_CELL_SIZE
                 );
