@@ -19,7 +19,7 @@ function update() {
 }
 
 function draw() {
-    canvas2D.fixDPI();
+    //canvas2D.fixDPI();
     canvas2D.clear();
     canvas2D.drawBackground(GAME_CONFIG.BACKGROUND_COLOR);
     tetris.draw();

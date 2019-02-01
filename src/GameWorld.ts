@@ -51,7 +51,7 @@ export class GameWorld {
         this._updateEveryXFrames = GAME_CONFIG.UPDATE_AFTER_X_FRAMES;
         this._map.init();
         const newShape: Shape = this.generateRandomShape();
-        this._shapesQueue.push(newShape);
+        this._shapesQueue = [newShape];
         this._movingShape = this.generateRandomShape();
     }
 
@@ -69,7 +69,7 @@ export class GameWorld {
         }
         return numOfCells;
     }
-    
+
     private handleInput(): void {
 
         let toMoveX = 0;
@@ -183,6 +183,34 @@ export class GameWorld {
                 );
     }
 
+    private drawShapesInQueue(): void {
+        canvas2D.drawText(
+                GAME_CONFIG.NEXT_SHAPE_LABEL, 
+                GAME_CONFIG.FONT, 
+                GAME_CONFIG.FONT_COLOR, 
+                GAME_CONFIG.NEXT_SHAPE_LABEL_POSITION
+            );
+        
+        for(let shape of this._shapesQueue){
+            let demoShape = this._shapeFactory.createShape(
+                    shape.shapeType, 
+                    new Vector2(GAME_CONFIG.NEXT_SHAPE_POSITION.X, GAME_CONFIG.NEXT_SHAPE_POSITION.Y), 
+                    shape.color,
+                    GAME_CONFIG.NEXT_SHAPE_CELL_SIZE
+                );
+
+            demoShape.cells.forEach(cell => 
+                canvas2D.drawRect(
+                        cell, 
+                        demoShape.color, 
+                        GAME_CONFIG.STROKE_COLOR, 
+                        GAME_CONFIG.NEXT_SHAPE_CELL_SIZE,
+                        GAME_CONFIG.NEXT_SHAPE_CELL_SIZE
+                    )
+                );
+        }
+    }
+
     //------Public Methods------//
 
     public update(): void {
@@ -206,11 +234,17 @@ export class GameWorld {
     }
 
     private drawScore(): void {
-        canvas2D.drawText('Score: ' + this._score.toString(), GAME_CONFIG.FONT, GAME_CONFIG.FONT_COLOR, GAME_CONFIG.SCORE_POSITION);
+        canvas2D.drawText(
+                GAME_CONFIG.SCORE_LABEL + this._score.toString(), 
+                GAME_CONFIG.FONT, 
+                GAME_CONFIG.FONT_COLOR, 
+                GAME_CONFIG.SCORE_POSITION
+            );
     }
 
     public draw(): void {
         this._map.draw();
         this.drawScore();
+        this.drawShapesInQueue();
     }
 }
