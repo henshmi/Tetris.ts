@@ -2,23 +2,23 @@ import { GAME_CONFIG } from './game.config';
 import { keyboard } from './input/Keyboard';
 import { Vector2 } from './geom/Vector2';
 import { canvas2D } from './Canvas';
-import { Cell } from "./map/Cell";
 import { Shape } from './shape/Shape';
 import { ShapeType } from './shape/ShapeType';
+import { GameMap } from './map/GameMap';
+import { ShapeFactory } from './shape/ShapeFactory';
 
 export class GameWorld {
 
     //------Members------//
 
-    private _map: Cell[][];
-    private _width: number;
-    private _height: number;
-    private _updateEveryXFrames: number = 20;
-    private _frame: number = 0;
+    private _map: GameMap;
+    private _updateEveryXFrames: number;
+    private _frame: number;
     private _movingShape: Shape = null;
     private _shapesQueue: Shape[] = [];
-    private _score: number = 0;
+    private _score: number;
     private _gameOver : boolean;
+    private _shapeFactory: ShapeFactory;
 
     private _shapeTypes: ShapeType[] = [
         ShapeType.I,
@@ -40,9 +40,16 @@ export class GameWorld {
     //------Constructor------//
 
     constructor(width: number, height: number) {
-        this._width = width;
-        this._height = height;
-        this.initMap();
+        this._shapeFactory = new ShapeFactory();
+        this._map = new GameMap(width, height);
+        this.init();
+    }
+
+    private init(): void {
+        this._score = 0;
+        this._frame = 0; 
+        this._updateEveryXFrames = GAME_CONFIG.UPDATE_AFTER_X_FRAMES;
+        this._map.init();
         const newShape: Shape = this.generateRandomShape();
         this._shapesQueue.push(newShape);
         this._movingShape = this.generateRandomShape();
@@ -50,58 +57,32 @@ export class GameWorld {
 
     //------Private Methods------//
 
-    private initMap() {
-        this._map = [];
+    private increaseScore(toAdd: number) : void {
+        this._score += toAdd;
+    }
 
-        for(let i: number = 0 ; i < this._height ; i++ ){
-            this._map[i] = [];
-
-            for(let j: number = 0 ; j < this._width ; j++){
-                this._map[i][j] = new Cell();
-            }
+    private dropShape(): number {
+        let numOfCells = 0;
+        
+        while(!this.lowerShape()){
+            numOfCells++;
         }
-    }
-
-    private isCellFilled(x: number, y: number): boolean {
-        return this.isInMap(x,y) && this._map[y][x].filled;
-    }
-
-    private clearCell(x: number, y: number): void {
-        if(this.isInMap(x, y)) {
-            this._map[y][x].filled = false;
-        }
-    }
-
-    private isInMap(x: number, y: number) {
-        return x >= 0 && x < this._width && y >= 0 && y < this._height;
-    }
-
-    private colorCell(x: number, y: number, color: string): void {
-        if(this.isInMap(x, y)){
-            this._map[y][x].filled = true;
-            this._map[y][x].color = color;
-        }
-    }
-
-    private increaseScore() : void {
-        this._score += this._width;
-    }
-
-    private dropShape(): void {
-        while(!this.lowerShape()){}
+        return numOfCells;
     }
     private handleInput(): void {
 
         let toMoveX = 0;
 
         if(keyboard.isPressed(GAME_CONFIG.DROP)) {
-            this.dropShape();
+            let cellsDropped = this.dropShape();
+            this.increaseScore(cellsDropped * GAME_CONFIG.DROPPED_SHAPE_BONUS);
         }
         else if(keyboard.isPressed(GAME_CONFIG.UP_KEY)) {
             this.rotateShape();
         }
         else if (keyboard.isPressed(GAME_CONFIG.DOWN_KEY)) {
-            this.lowerShape();
+            const reachedBottom = this.lowerShape();
+            this.increaseScore(GAME_CONFIG.LOWERED_SHAPE_BONUS);
         }
         else if (keyboard.isPressed(GAME_CONFIG.LEFT_KEY)) {
             toMoveX = -1;
@@ -111,24 +92,18 @@ export class GameWorld {
         }
 
         if(toMoveX !== 0){
-
+            
             const reachedBorder = this._movingShape.cells.some(cell => {
                 const nextX = cell.X + toMoveX;
                 const partOfShape = this._movingShape.isPartOfShape(cell.addX(toMoveX));
-                return nextX < 0 || nextX === this._width ||
-                    (this.isCellFilled(nextX, cell.Y) && !partOfShape);
+                return nextX < 0 || nextX === this._map.width ||
+                    (this._map.isCellFilled(nextX, cell.Y) && !partOfShape);
             });
 
             if(!reachedBorder) {
-                this._movingShape.cells.forEach(cell => {
-                    this.clearCell(cell.X, cell.Y);
-                });
-
+                this._map.clearShape(this._movingShape);
                 this._movingShape.move(toMoveX, 0);
-
-                this._movingShape.cells.forEach(cell => {
-                    this.colorCell(cell.X, cell.Y, this._movingShape.color);
-                });
+                this._map.colorShape(this._movingShape);
             }
         }
     }
@@ -141,8 +116,7 @@ export class GameWorld {
 
         let newShape = [];
 
-        for(let i = 0 ; i < this._movingShape.cells.length; i++) {
-            let cell = this._movingShape.cells[i];
+        for(let cell of this._movingShape.cells) {
             let x = cell.X - this._movingShape.origin.X;
             let y = cell.Y - this._movingShape.origin.Y;
             let newX = -y;
@@ -154,20 +128,14 @@ export class GameWorld {
 
         let possibleRotation = newShape.every(cell => {
             const partOfShape = this._movingShape.isPartOfShape(cell);
-            return cell.Y >= 0 && cell.X >= 0 && cell.X < this._width &&
-                (!this.isCellFilled(cell.X, cell.Y) || partOfShape);
+            return this._map.isInMap(cell.X, cell.Y) &&
+                (!this._map.isCellFilled(cell.X, cell.Y) || partOfShape);
         });
 
         if(possibleRotation) {
-            this._movingShape.cells.forEach(cell => {
-                this.clearCell(cell.X, cell.Y);
-            });
-
+            this._map.clearShape(this._movingShape);
             this._movingShape.cells = newShape;
-
-            this._movingShape.cells.forEach(cell => {
-                this.colorCell(cell.X, cell.Y, this._movingShape.color);
-            });
+            this._map.colorShape(this._movingShape);
         }
     }
 
@@ -176,20 +144,14 @@ export class GameWorld {
         const reachedBottom = this._movingShape.cells.some(cell => {
             const nextY: number = cell.Y + 1;
             const partOfShape = this._movingShape.isPartOfShape(cell.addY(1));
-            return nextY === this._height ||
-                   (this.isCellFilled(cell.X, nextY) && !partOfShape);
+            return nextY === this._map.height ||
+                   (this._map.isCellFilled(cell.X, nextY) && !partOfShape);
         });
 
         if(!reachedBottom) {
-            this._movingShape.cells.forEach(cell => {
-                this.clearCell(cell.X, cell.Y);
-            });
-
+            this._map.clearShape(this._movingShape);
             this._movingShape.move(0, 1);
-
-            this._movingShape.cells.forEach(cell => {
-                this.colorCell(cell.X, cell.Y, this._movingShape.color);
-            });
+            this._map.colorShape(this._movingShape);
         }
 
         return reachedBottom;
@@ -197,128 +159,27 @@ export class GameWorld {
 
     private handleFilledLines(): void {
         
-        for (let i = 0 ; i < this._map.length ; i++) {
-            const filledLine : boolean = this._map[i].every(cell => cell.filled);
-
-            if(filledLine) {
-                this._map.splice(i,1);
-                let newRow: Cell[] = [];
-                for(let j = 0 ; j < this._width ; j++) {
-                    newRow[j] = new Cell();
-                }
-
-                this._map.unshift(newRow);
-                this.increaseScore();
+        let filledLinesCount = this._map.removeFilledLines();
+        this.increaseScore(filledLinesCount * GAME_CONFIG.FILLED_LINE_BONUS);
                 
-                if(this._updateEveryXFrames > 0) {
-                    this._updateEveryXFrames--;
-                }
-            }
+        if(this._updateEveryXFrames > 0) {
+            this._updateEveryXFrames--;
         }
     }
 
     private checkForGameOver(): boolean {
-        return this._map[0].some(cell => cell.filled);
-    }
-
-    private createShape(shapeType: ShapeType): Shape {
-
-        let shapeY = -4;
-        let randomX: number;
-        let position: Vector2;
-        let shapeCells: Vector2[] = [];
-        let shapeOrigin: Vector2;
-
-        switch(shapeType) {
-            case ShapeType.I:
-                randomX = Math.floor(Math.random() * this._width);
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X, position.Y + 2),
-                    new Vector2(position.X, position.Y + 3)
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;
-            case ShapeType.J:
-                randomX = Math.floor(Math.random() * (this._width - 1)) + 1;
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X, position.Y + 2),
-                    new Vector2(position.X - 1, position.Y + 2),
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;
-            case ShapeType.L:
-                randomX = Math.floor(Math.random() * (this._width - 1));
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y ),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X, position.Y + 2),
-                    new Vector2(position.X + 1, position.Y + 2),
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;
-            case ShapeType.O:
-                randomX = Math.floor(Math.random() * (this._width - 1));
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X + 1, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X + 1, position.Y + 1),
-                ];
-                shapeOrigin = null;
-                break;
-            case ShapeType.S:
-                randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X + 1, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X - 1, position.Y + 1),
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;
-            case ShapeType.Z:
-                randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X - 1, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X + 1, position.Y + 1),
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;
-            case ShapeType.T:
-                randomX = Math.floor(Math.random() * (this._width - 2)) + 1;
-                position = new Vector2(randomX, shapeY);
-                shapeCells = [
-                    new Vector2(position.X, position.Y),
-                    new Vector2(position.X, position.Y + 1),
-                    new Vector2(position.X - 1, position.Y + 1),
-                    new Vector2(position.X + 1, position.Y + 1),
-                ];
-                shapeOrigin = new Vector2(position.X, position.Y + 1);
-                break;  
-        }
-
-        // Sets shape color
-        const shapeTypeIndex = this._shapeTypes.indexOf(shapeType) 
-        let shapeColor = GAME_CONFIG.SHAPE_COLORS[shapeTypeIndex];
-
-        return new Shape(shapeType, shapeCells, shapeOrigin, shapeColor);
-    }
+        return this._map.anyFilledOnRow(0);
+    } 
 
     private generateRandomShape(): Shape {
         const randomShapeTypeIndex = Math.floor(Math.random() * this._shapeTypes.length);
-        return this.createShape(this._shapeTypes[randomShapeTypeIndex]);
+        let shapeColor = GAME_CONFIG.SHAPE_COLORS[randomShapeTypeIndex];
+        
+        return this._shapeFactory.createShape(
+                    this._shapeTypes[randomShapeTypeIndex], 
+                    new Vector2(Math.floor(this._map.width / 2), -3),
+                    shapeColor
+                );
     }
 
     //------Public Methods------//
@@ -331,15 +192,14 @@ export class GameWorld {
         const reachedBottom = this.lowerShape();
         if(reachedBottom) {
             this.handleFilledLines();
-            const gameOver: boolean = this.checkForGameOver();
-            if(!gameOver){
+            this._gameOver = this.checkForGameOver();
+            if(!this._gameOver){
                 let newShape: Shape = this.generateRandomShape();
                 this._shapesQueue.unshift(newShape);
                 this._movingShape = this._shapesQueue.pop();
-                console.log(ShapeType[this._shapesQueue[0].shapeType]);
             }
             else{
-                this._gameOver = true;
+                this.init();
             }
         }
     }
@@ -349,15 +209,7 @@ export class GameWorld {
     }
 
     public draw(): void {
-        for(let i = 0 ; i < this._map.length ; i++){
-            for(let j = 0 ; j < this._map[i].length ; j++){
-                const cell: Cell = this._map[i][j];
-                if(cell.filled){
-                    canvas2D.drawRectAtCell(i, j, cell.color, GAME_CONFIG.STROKE_COLOR, GAME_CONFIG.CELL_SIZE);
-                }
-            }
-        }
-
+        this._map.draw();
         this.drawScore();
     }
 }

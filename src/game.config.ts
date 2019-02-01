@@ -1,6 +1,7 @@
 export const GAME_CONFIG : any = {
 
     // PHYSICS
+    UPDATE_AFTER_X_FRAMES: 40,
 
     // SIZING
     CELL_SIZE: 80,
@@ -22,5 +23,10 @@ export const GAME_CONFIG : any = {
     RIGHT_KEY: 39,
     UP_KEY: 38,
     DOWN_KEY: 40,
-    DROP: 13
+    DROP: 13,
+
+    // RULES
+    FILLED_LINE_BONUS: 100,
+    DROPPED_SHAPE_BONUS: 2,
+    LOWERED_SHAPE_BONUS: 1,
 };
