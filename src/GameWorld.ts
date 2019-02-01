@@ -82,6 +82,7 @@ export class GameWorld {
             this.rotateShape();
         }
         else if (keyboard.isPressed(GAME_CONFIG.DOWN_KEY)) {
+            this.lowerShape();
             this.increaseScore(GAME_CONFIG.LOWERED_SHAPE_BONUS);
         }
         else if (keyboard.isPressed(GAME_CONFIG.LEFT_KEY)) {
