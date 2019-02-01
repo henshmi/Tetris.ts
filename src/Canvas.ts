@@ -4,41 +4,44 @@ class Canvas2D {
 
     private _canvas : HTMLCanvasElement;
     private _context : CanvasRenderingContext2D;
+    private _dpi: number;
 
     constructor(canvas : HTMLCanvasElement) {
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        //this.fixDPI();
+        this.fixDPI();
     }
 
     get Width() {
-        return this._canvas.width;
+        return this._canvas.width / this._dpi;
     }
     
     get Height() {
-        return this._canvas.height;
+        return this._canvas.height / this._dpi;
     }
 
     clear() : void {
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     }
 
-    // public fixDPI(){
-    //     //get DPI
-    //     let dpi: number = window.devicePixelRatio;
+    public fixDPI(){
+        //get DPI
+        this._dpi = window.devicePixelRatio;
 
-    //     //get CSS height
-    //     //the + prefix casts it to an integer
-    //     //the slice method gets rid of "px"
-    //     let style_height: number = +getComputedStyle(this._canvas).getPropertyValue("height").slice(0, -2);
+        //get CSS height
+        //the + prefix casts it to an integer
+        //the slice method gets rid of "px"
+        let style_height: number = +getComputedStyle(this._canvas).getPropertyValue("height").slice(0, -2);
         
-    //     //get CSS width
-    //     let style_width: number = +getComputedStyle(this._canvas).getPropertyValue("width").slice(0, -2);
+        //get CSS width
+        let style_width: number = +getComputedStyle(this._canvas).getPropertyValue("width").slice(0, -2);
         
-    //     //scale the canvas
-    //     this._canvas.setAttribute('height', (style_height * dpi).toString());
-    //     this._canvas.setAttribute('width', (style_width * dpi).toString());
-    // }
+        //scale the canvas
+        this._canvas.setAttribute('height', (style_height * this._dpi).toString());
+        this._canvas.setAttribute('width', (style_width * this._dpi).toString());
+
+        this._context.scale(this._dpi, this._dpi);
+    }
 
     drawBackground(backgroundColor: string) {
         this._context.save();
