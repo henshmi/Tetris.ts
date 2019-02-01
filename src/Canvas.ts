@@ -8,7 +8,7 @@ class Canvas2D {
     constructor(canvas : HTMLCanvasElement) {
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        //this.fixDPI();
+        this.fixDPI();
     }
 
     get Width() {
@@ -23,7 +23,7 @@ class Canvas2D {
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     }
 
-    fixDPI(){
+    public fixDPI(){
         //get DPI
         let dpi: number = window.devicePixelRatio;
 
