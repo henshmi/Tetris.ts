@@ -1,4 +1,3 @@
-import { GAME_CONFIG } from './game.config';
 import { Vector2 } from './geom/Vector2';
 
 class Canvas2D {
