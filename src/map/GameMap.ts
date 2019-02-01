@@ -2,14 +2,16 @@ import { Shape } from './../shape/Shape';
 import { Cell } from "./Cell";
 import { canvas2D } from "../Canvas";
 import { GAME_CONFIG } from "../game.config";
-import { Vector2 } from "../geom/Vector2";
 
 export class GameMap {
+
+    //------Members------//
 
     private _map: Cell[][];
     private _height: number;
     private _width: number;
 
+    //------Properties------//
     
     public get height() : number {
         return this._height;
@@ -19,11 +21,15 @@ export class GameMap {
         return this._width;
     }
 
+    //------Constructor------//
+
     constructor(width: number, height: number) {
         this._map = [];
         this._width = width;
         this._height = height;
     }
+
+    //------Public Methods------//
 
     public init(): void{
         for(let i: number = 0 ; i < this._height ; i++ ){
@@ -42,7 +48,6 @@ export class GameMap {
     public isCellFilled(x: number, y: number): boolean {
         return this.isInMap(x,y) && this._map[y][x].filled;
     }
-
 
     public clearCell(x: number, y: number): void {
         if(this.isInMap(x, y)) {

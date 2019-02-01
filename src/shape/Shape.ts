@@ -3,10 +3,14 @@ import { Vector2 } from './../geom/Vector2';
 
 export class Shape {
 
+    //------Members------//
+
     private _cells: Vector2[] = [];
     private _color: string = '';
     private _origin: Vector2 = null;
     private _shapeType: ShapeType;
+
+    //------Properties------//
     
     public get shapeType() : ShapeType {
         return this._shapeType;
@@ -22,16 +26,12 @@ export class Shape {
     public get origin() : Vector2 {
         return this._origin;
     }
-    public set origin(origin : Vector2) {
-        this._origin = origin;
-    }
     
     public get color() : string {
         return this._color;
     }
-    public set color(color : string) {
-        this._color = color;
-    }
+
+    //------Constructor------//
     
     constructor(shapeType: ShapeType, cells: Vector2[], origin: Vector2, color: string) {
         this._shapeType = shapeType;
@@ -39,6 +39,8 @@ export class Shape {
         this._color = color;
         this._origin = origin;
     }
+
+    //------Public Methods------//
 
     public isPartOfShape(cell: Vector2) {
         return this._cells.some(shapeCell => shapeCell.X === cell.X && shapeCell.Y === cell.Y);

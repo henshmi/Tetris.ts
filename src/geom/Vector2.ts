@@ -1,12 +1,19 @@
 
 export class Vector2 {
+
+    //------Members------//
+
     private _x: number;
     private _y: number;
+
+    //------Constructor------//
 
     constructor(x: number, y: number) {
         this._x = x;
         this._y = y;
     }
+
+    //------Properties------//
 
     get X() {
         return this._x;
@@ -20,26 +27,29 @@ export class Vector2 {
         return new Vector2(0, 0);
     }
 
-    addX(x: number) {
+    //------Public Methods------//
+
+    public addX(x: number): Vector2 {
         return new Vector2(this._x, this._y).addToX(x);
     }
 
-    addY(y: number) {
+    public addY(y: number): Vector2 {
         return new Vector2(this._x, this._y).addToY(y);
     }
 
-    addToX(x: number) {
+    public addToX(x: number): Vector2 {
         this._x += x;
         return this;
     }
 
-    addToY(y: number) {
+    public addToY(y: number): Vector2 {
         this._y += y;
         return this;
     }
 
-    add(x : number, y: number) : void{
+    public add(x : number, y: number): Vector2{
         this.addToX(x);
         this.addToY(y);
+        return this;
     }
 }

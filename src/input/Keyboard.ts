@@ -1,22 +1,30 @@
 
 class Keyboard {
 
-    keysPressed : boolean[] = [];
+    //------Members------//
+
+    _keysPressed : boolean[] = [];
+    
+    //------Constructor------//
 
     constructor() {
         document.addEventListener('keydown', (e) => {this.keyDown(e) });
     }
 
-    keyDown(event: KeyboardEvent) {
-        this.keysPressed[event.keyCode] = true;
+    //------Private Methods------//
+
+    private keyDown(event: KeyboardEvent) : void{
+        this._keysPressed[event.keyCode] = true;
     }
 
-    reset() : void {
-        this.keysPressed = [];
+    //------Public Methods------//
+
+    public reset() : void {
+        this._keysPressed = [];
     }
 
-    isPressed(keyCode: number) {
-        return this.keysPressed[keyCode];
+    public isPressed(keyCode: number): boolean {
+        return this._keysPressed[keyCode];
     }
 }
 

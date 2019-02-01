@@ -1,8 +1,12 @@
 
 export class Cell {
 
+    //------Members------//
+
     private _filled : boolean;
     private _color : string;
+
+    //------Properties------//
 
     public get color() : string {
         return this._color;
@@ -17,6 +21,8 @@ export class Cell {
     public set filled(v : boolean) {
         this._filled = v;
     }
+
+    //------Constructor------//
 
     constructor() {
         this._filled = false;

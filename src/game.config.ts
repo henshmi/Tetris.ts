@@ -12,7 +12,7 @@ export const GAME_CONFIG : any = {
     STROKE_COLOR: 'black',
     SHAPE_COLORS: ["#F9B38F", "#BF6C86", "#84AF9C", "#6D5C80", "#FFA3D0", "#439F9E", "#EF5F3C"],
     
-    // TEXT
+    // TEXTS
     FONT: '20px Comic Sans MS',    
     FONT_COLOR: 'white',
     SCORE_LABEL: 'Score: ',

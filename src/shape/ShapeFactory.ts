@@ -1,9 +1,11 @@
 import { ShapeType } from "./ShapeType";
 import { Vector2 } from "../geom/Vector2";
 import { Shape } from "./Shape";
-import { GAME_CONFIG } from "../game.config";
 
 export class ShapeFactory {
+
+    //------Public Methods------//
+
     public createShape(shapeType: ShapeType, position: Vector2, shapeColor: string, margin: number = 1): Shape {
 
         let shapeCells: Vector2[] = [];

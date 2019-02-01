@@ -3,29 +3,27 @@ import { keyboard } from './input/Keyboard';
 import { canvas2D } from './Canvas';
 import { GAME_CONFIG } from './game.config';
 
-const gameWidth = canvas2D.Width / GAME_CONFIG.CELL_SIZE;
-const gameHeight = canvas2D.Height / GAME_CONFIG.CELL_SIZE;
-
 let tetris: GameWorld;
 
-function start() {
+function start(): void {
+    const gameWidth = canvas2D.Width / GAME_CONFIG.CELL_SIZE;
+    const gameHeight = canvas2D.Height / GAME_CONFIG.CELL_SIZE;
     tetris = new GameWorld(gameWidth, gameHeight);
     gameLoop();
 }
 
-function update() {
+function update(): void {
     tetris.update();
     keyboard.reset();
 }
 
-function draw() {
-    //canvas2D.fixDPI();
+function draw(): void {
     canvas2D.clear();
     canvas2D.drawBackground(GAME_CONFIG.BACKGROUND_COLOR);
     tetris.draw();
 }
 
-function gameLoop() {
+function gameLoop(): void {
     update();
     draw();
     requestAnimationFrame(gameLoop);
