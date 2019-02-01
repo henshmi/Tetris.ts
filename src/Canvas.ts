@@ -8,7 +8,7 @@ class Canvas2D {
     constructor(canvas : HTMLCanvasElement) {
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        this.fixDPI();
+        //this.fixDPI();
     }
 
     get Width() {

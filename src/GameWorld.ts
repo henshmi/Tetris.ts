@@ -69,6 +69,7 @@ export class GameWorld {
         }
         return numOfCells;
     }
+    
     private handleInput(): void {
 
         let toMoveX = 0;

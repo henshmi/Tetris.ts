@@ -4,7 +4,7 @@ export const GAME_CONFIG : any = {
     UPDATE_AFTER_X_FRAMES: 40,
 
     // SIZING
-    CELL_SIZE: 80,
+    CELL_SIZE: 40,
 
     // COLORS
     BACKGROUND_COLOR: '#28363B',
@@ -12,11 +12,11 @@ export const GAME_CONFIG : any = {
     SHAPE_COLORS: ["#F9B38F", "#BF6C86", "#84AF9C", "#6D5C80", "#FFA3D0", "#439F9E", "#EF5F3C"],
     
     // TEXT
-    FONT: '40px Comic Sans MS',    
+    FONT: '20px Comic Sans MS',    
     FONT_COLOR: 'white',
 
     // POSITIONS
-    SCORE_POSITION: {X: 20, Y: 50},
+    SCORE_POSITION: {X: 10, Y: 30},
 
     // KEYS
     LEFT_KEY: 37,
