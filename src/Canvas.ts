@@ -9,6 +9,7 @@ class Canvas2D {
     constructor(canvas : HTMLCanvasElement) {
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
+        this.fixDPI();
     }
 
     get Width() {
@@ -21,6 +22,23 @@ class Canvas2D {
 
     clear() : void {
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+    }
+
+    fixDPI(){
+        //get DPI
+        let dpi: number = window.devicePixelRatio;
+
+        //get CSS height
+        //the + prefix casts it to an integer
+        //the slice method gets rid of "px"
+        let style_height: number = +getComputedStyle(this._canvas).getPropertyValue("height").slice(0, -2);
+        
+        //get CSS width
+        let style_width: number = +getComputedStyle(this._canvas).getPropertyValue("width").slice(0, -2);
+        
+        //scale the canvas
+        this._canvas.setAttribute('height', (style_height * dpi).toString());
+        this._canvas.setAttribute('width', (style_width * dpi).toString());
     }
 
     drawBackground(backgroundColor: string) {
