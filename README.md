@@ -1,5 +1,4 @@
 # Tetris.ts
-<hr>
 
 A simple Tetris game written in TypeScript.
 Have fun, and good luck!
