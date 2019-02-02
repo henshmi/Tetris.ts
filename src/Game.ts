@@ -38,7 +38,6 @@ function gameOverScreen(): void {
 
 function update(): void {
     tetris.update();
-    keyboard.reset();
 }
 
 function draw(): void {
@@ -55,6 +54,7 @@ function gameLoop(): void {
         update();
         draw();
     }
+    keyboard.reset();
     requestAnimationFrame(gameLoop);
 }
 
