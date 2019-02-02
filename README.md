@@ -4,11 +4,11 @@
 
 ## Keys
 * **Spacebar** : Start game.
-2. **Up Arrow** : Rotate left.
-3. **Left Arrow** : Move shape left.
-4. **Right Arrow** : Move shape right.
-5. **Down Arrow** : Lower shape.
-6. **Enter** : Drop shape.
+* **Up Arrow** : Rotate left.
+* **Left Arrow** : Move shape left.
+* **Right Arrow** : Move shape right.
+* **Down Arrow** : Lower shape.
+* **Enter** : Drop shape.
 ----
 ## Demo
 [Play here!](https://henshmi.github.io/Tetris.ts/dist/)
