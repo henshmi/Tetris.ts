@@ -6,12 +6,12 @@ Have fun, and good luck!
 <hr>
 
 <h3>Keys:</h3>
-* 'Spacebar' : Start game.
-* 'Up Arrow' : Rotate left.
-* 'Left Arrow' : Move shape left.
-* 'Right Arrow' : Move shape right.
-* 'Down Arrow' : Lower shape.
-* 'Enter' : Drop shape.
+* 'Spacebar' : Start game.<br>
+* 'Up Arrow' : Rotate left.<br>
+* 'Left Arrow' : Move shape left.<br>
+* 'Right Arrow' : Move shape right.<br>
+* 'Down Arrow' : Lower shape.<br>
+* 'Enter' : Drop shape.<br>
 
 <h3>Demo:</h3>
 https://henshmi.github.io/Tetris.ts/dist/
