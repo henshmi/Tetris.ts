@@ -1,6 +1,6 @@
 # Tetris.ts
 
-A simple Tetris game written in TypeScript.
+A simple Tetris game written in TypeScript.<br>
 Have fun, and good luck!
 
 <hr>
