@@ -9,7 +9,7 @@
 * **Right Arrow** : Move shape right.
 * **Down Arrow** : Lower shape.
 * **Enter** : Drop shape.
-----
+
 ## Demo
 [Play here!](https://henshmi.github.io/Tetris.ts/dist/)
 
