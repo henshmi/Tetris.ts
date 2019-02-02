@@ -14,4 +14,4 @@ Keys:
 Demo:
 https://henshmi.github.io/Tetris.ts/dist/
 
-<img src="https://i.ibb.co/Ks01fdj/Screen-Shot-2019-02-02-at-12-51-12.png">
+<img width="42" src="https://i.ibb.co/Ks01fdj/Screen-Shot-2019-02-02-at-12-51-12.png">
