@@ -13,17 +13,25 @@ export const GAME_CONFIG : any = {
     SHAPE_COLORS: ["#F9B38F", "#BF6C86", "#84AF9C", "#6D5C80", "#FFA3D0", "#439F9E", "#EF5F3C"],
     
     // TEXTS
-    FONT: '20px Comic Sans MS',    
+    SCORE_LABEL_FONT: '20px Comic Sans MS',
+    NEXT_SHAPE_LABEL_FONT: '20px Comic Sans MS',
+    GAME_OVER_LABEL_FONT: '50px Comic Sans MS',
+    GAME_OVER_YOUR_SCORE_LABEL_FONT: '30px Comic Sans MS',
     FONT_COLOR: 'white',
     SCORE_LABEL: 'Score: ',
     NEXT_SHAPE_LABEL: 'Next Shape: ',
+    GAME_OVER_LABEL: 'Game Over!',
+    GAME_OVER_YOUR_SCORE_LABEL: 'Your Score: ',
 
     // POSITIONS
-    SCORE_POSITION: {X: 10, Y: 25},
-    NEXT_SHAPE_LABEL_POSITION: {X: 400, Y: 25},
-    NEXT_SHAPE_POSITION: {X: 545, Y: 8},
+    NEXT_SHAPE_POSITION: {X: 555, Y: 10},
+    SCORE_LABEL_POSITION: {X: 10, Y: 25, ALIGNMENT: 'left'},
+    NEXT_SHAPE_LABEL_POSITION: {X: 420, Y: 25, ALIGNMENT: 'left'},
+    GAME_OVER_LABEL_POSITION: {X: 300, Y: 400, ALIGNMENT: 'center'},
+    GAME_OVER_YOUR_SCORE_LABEL_POSITION: {X: 300, Y: 470, ALIGNMENT: 'center'},
 
     // KEYS
+    START_KEY: 32,
     LEFT_KEY: 37,
     RIGHT_KEY: 39,
     UP_KEY: 38,

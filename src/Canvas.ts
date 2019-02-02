@@ -69,10 +69,11 @@ class Canvas2D {
         this._context.restore();
     }
 
-    public drawText(text: string, font:string, color: string, position: Vector2): void {
+    public drawText(text: string, font:string, color: string, position: Vector2, textAlign: string = 'left'): void {
         this._context.save();
         this._context.fillStyle = color;
         this._context.font = font;
+        this._context.textAlign = textAlign as CanvasTextAlign;
         this._context.fillText(text, position.X, position.Y);
         this._context.restore();
     }

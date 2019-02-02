@@ -35,7 +35,10 @@ export class GameWorld {
     public get gameOver() : boolean {
         return this._gameOver;
     }
-    
+
+    public get score() : number {
+        return this._score;
+    }
     
     //------Constructor------//
 
@@ -43,16 +46,6 @@ export class GameWorld {
         this._shapeFactory = new ShapeFactory();
         this._map = new GameMap(width, height);
         this.init();
-    }
-
-    private init(): void {
-        this._score = 0;
-        this._frame = 0; 
-        this._updateEveryXFrames = GAME_CONFIG.UPDATE_AFTER_X_FRAMES;
-        this._map.init();
-        const newShape: Shape = this.generateRandomShape();
-        this._shapesQueue = [newShape];
-        this._movingShape = this.generateRandomShape();
     }
 
     //------Private Methods------//
@@ -189,9 +182,10 @@ export class GameWorld {
     private drawShapesInQueue(): void {
         canvas2D.drawText(
                 GAME_CONFIG.NEXT_SHAPE_LABEL, 
-                GAME_CONFIG.FONT, 
+                GAME_CONFIG.NEXT_SHAPE_LABEL_FONT, 
                 GAME_CONFIG.FONT_COLOR, 
-                GAME_CONFIG.NEXT_SHAPE_LABEL_POSITION
+                GAME_CONFIG.NEXT_SHAPE_LABEL_POSITION,
+                GAME_CONFIG.NEXT_SHAPE_LABEL_POSITION.ALIGNMENT
             );
         
         for(let i = this._shapesQueue.length - 1; i >= 0; i--){
@@ -218,7 +212,28 @@ export class GameWorld {
         }
     }
 
+    private drawScore(): void {
+        canvas2D.drawText(
+                GAME_CONFIG.SCORE_LABEL + this._score.toString(), 
+                GAME_CONFIG.SCORE_LABEL_FONT, 
+                GAME_CONFIG.FONT_COLOR, 
+                GAME_CONFIG.SCORE_LABEL_POSITION,
+                GAME_CONFIG.SCORE_LABEL_POSITION.ALIGNMENT
+            );
+    }
+
     //------Public Methods------//
+
+    public init(): void {
+        this._gameOver = false;
+        this._score = 0;
+        this._frame = 0; 
+        this._updateEveryXFrames = GAME_CONFIG.UPDATE_AFTER_X_FRAMES;
+        this._map.init();
+        const newShape: Shape = this.generateRandomShape();
+        this._shapesQueue = [newShape];
+        this._movingShape = this.generateRandomShape();
+    }
 
     public update(): void {
         this.handleInput();
@@ -234,19 +249,7 @@ export class GameWorld {
                 this._shapesQueue.unshift(newShape);
                 this._movingShape = this._shapesQueue.pop();
             }
-            else{
-                this.init();
-            }
         }
-    }
-
-    private drawScore(): void {
-        canvas2D.drawText(
-                GAME_CONFIG.SCORE_LABEL + this._score.toString(), 
-                GAME_CONFIG.FONT, 
-                GAME_CONFIG.FONT_COLOR, 
-                GAME_CONFIG.SCORE_POSITION
-            );
     }
 
     public draw(): void {
