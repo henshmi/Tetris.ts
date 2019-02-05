@@ -1,38 +1,27 @@
+import { GAME_CONFIG } from './game.config';
 import { Vector2 } from './geom/Vector2';
 
 class Canvas2D {
 
     //------Members------//
 
+    private _canvasContainer: HTMLElement;
     private _canvas : HTMLCanvasElement;
     private _context : CanvasRenderingContext2D;
     private _dpi: number;
 
     //------Constructor------//
 
-    constructor(canvas : HTMLCanvasElement) {
+    constructor(canvas : HTMLCanvasElement, canvasContainer: HTMLElement) {
+        this._canvasContainer = canvasContainer;
         this._canvas = canvas;
         this._context = this._canvas.getContext('2d');
-        this.fixDPI();
-    }
-
-    //------Properties------//
-
-    get Width() {
-        return this._canvas.width / this._dpi;
-    }
-    
-    get Height() {
-        return this._canvas.height / this._dpi;
-    }
-
-    clear() : void {
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this.resizeCanvas();
     }
 
     //------Private Methods------//
 
-    private fixDPI(){
+    private fixDPI(scale: Vector2){
         //get DPI
         this._dpi = window.devicePixelRatio;
 
@@ -48,10 +37,41 @@ class Canvas2D {
         this._canvas.setAttribute('height', (style_height * this._dpi).toString());
         this._canvas.setAttribute('width', (style_width * this._dpi).toString());
 
-        this._context.scale(this._dpi, this._dpi);
+        this._context.scale(this._dpi * scale.X, this._dpi * scale.Y);
     }
 
     //------Public Methods------//
+
+    public resizeCanvas(): void {
+        
+        const originalCanvasWidth = GAME_CONFIG.GAME_WIDTH * GAME_CONFIG.CELL_SIZE;
+        const originalCanvasHeight = GAME_CONFIG.GAME_HEIGHT * GAME_CONFIG.CELL_SIZE;
+        const widthToHeight: number = originalCanvasWidth / originalCanvasHeight;
+
+        let newHeight: number = window.innerHeight - 10 >= GAME_CONFIG.CANVAS_MIN_HEIGHT ? window.innerHeight - 10 : GAME_CONFIG.CANVAS_MIN_HEIGHT;
+        let newWidth: number = window.innerWidth >= GAME_CONFIG.CANVAS_MIN_WIDTH ? window.innerWidth : GAME_CONFIG.CANVAS_MIN_WIDTH;
+       
+        const newWidthToHeight: number = newWidth / newHeight;
+
+        newWidth = newWidthToHeight > widthToHeight ? newHeight * widthToHeight : newWidth / widthToHeight;
+        
+        this._canvasContainer.style.width = newWidth + 'px';
+        this._canvasContainer.style.height = newHeight + 'px';
+        this._canvasContainer.style.marginLeft = (window.innerWidth - 20 - newWidth) / 2 + 'px';
+        this._canvasContainer.style.marginRight = (window.innerWidth - 20 - newWidth) / 2 + 'px';
+        
+        const scale = new Vector2(newWidth / originalCanvasWidth, newHeight / originalCanvasHeight);
+
+        this._canvas.width = newWidth;
+        this._canvas.height = newHeight;
+
+        this.fixDPI(scale);
+    }
+
+
+    public clear() : void {
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+    }
 
     public drawBackground(backgroundColor: string) {
         this._context.save();
@@ -84,4 +104,7 @@ class Canvas2D {
 }
 
 const canvas : HTMLCanvasElement = document.getElementById('screen') as HTMLCanvasElement;
-export const canvas2D = new Canvas2D(canvas);
+const container : HTMLElement = document.getElementById('screen') as HTMLElement;
+export const canvas2D = new Canvas2D(canvas, container);
+
+window.addEventListener('resize', canvas2D.resizeCanvas.bind(canvas2D));

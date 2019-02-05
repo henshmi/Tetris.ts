@@ -6,9 +6,7 @@ import { GAME_CONFIG } from './game.config';
 let tetris: GameWorld;
 
 function start(): void {
-    const gameWidth = canvas2D.Width / GAME_CONFIG.CELL_SIZE;
-    const gameHeight = canvas2D.Height / GAME_CONFIG.CELL_SIZE;
-    tetris = new GameWorld(gameWidth, gameHeight);
+    tetris = new GameWorld(GAME_CONFIG.GAME_WIDTH, GAME_CONFIG.GAME_HEIGHT);
     gameLoop();
 }
 

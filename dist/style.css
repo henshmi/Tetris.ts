@@ -1,13 +1,9 @@
 body {
+    margin: 3px;
     background-color: #19232D;
 }
 canvas {
     width: 100%;
     height: 100%;
-}
-#container {
-    border: 2px solid #343D46;
-    width: 600px;
-    height: 800px;
-    margin: auto;
+
 }
