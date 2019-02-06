@@ -82,6 +82,7 @@ class Canvas2D {
 
     public drawRect(position: Vector2, fillColor: string, strokeColor: string, width: number, height: number) : void {
         this._context.save();
+        this._context.lineWidth = GAME_CONFIG.STROKE_WIDTH;
         this._context.strokeStyle = strokeColor;
         this._context.fillStyle = fillColor;
         this._context.fillRect(position.X, position.Y, width, height);
